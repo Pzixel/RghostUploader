@@ -9,7 +9,7 @@ namespace RghostUploader
     {
         static void Main()
         {
-            const string path = "testfile.txt";
+            const string path = "testtesttest.txt";
             File.WriteAllText(path, "Hello world from RghostUploader. Generated at " + DateTime.Now.ToString("u"));
             Uri fileUri = UploadFile(path);
             Console.WriteLine("Uploaded file URI = {0}", fileUri);
@@ -20,19 +20,15 @@ namespace RghostUploader
             using (var client = new HttpClient {BaseAddress = new Uri("http://kaon.rghost.ru/")})
             {
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "deflate");
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate");
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0");
                 client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
                 client.DefaultRequestHeaders.TryAddWithoutValidation("X-Requested-With", "XMLHttpRequest");
 
                 using (var requestContent = new MultipartFormDataContent())
                 {
-                    requestContent.Add(new StringContent("\u2713"), "utf-8", "form-data");
-
                     byte[] bytes = File.ReadAllBytes(path);
                     requestContent.Add(new ByteArrayContent(bytes), "file", Path.GetFileName(path));
-
-                    requestContent.Add(new StringContent("Отправить"), "commit");
 
                     HttpResponseMessage postResponse = client.PostAsync("files", requestContent).Result;
                     if (postResponse.StatusCode != HttpStatusCode.OK)
